@@ -54,6 +54,17 @@ jobs:
         run: |
           Copy-Item "src-tauri/bin/server.exe" "src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
 
+      - name: Delete original server.exe
+        shell: pwsh
+        run: |
+          $original = "src-tauri/bin/server.exe"
+          if (Test-Path $original) {
+            Remove-Item $original -Force
+            Write-Host "Deleted original file: $original"
+          } else {
+            Write-Host "File not found, nothing to delete: $original"
+          }
+
       - name: List downloaded files 1
         run: ls src-tauri/bin
 
