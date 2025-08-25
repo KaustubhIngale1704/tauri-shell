@@ -19,12 +19,6 @@ jobs:
         with:
           fetch-depth: 1
 
-      - name: Setup Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: 20
-          check-latest: true
-
       - name: Setup Rust
         uses: hecrj/setup-rust-action@v2
         with:
