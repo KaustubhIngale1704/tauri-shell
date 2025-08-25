@@ -28,7 +28,7 @@ jobs:
 
       - name: Build React frontend
         run: pnpm install && pnpm run build
-        working-directory: tauri-dotnet-sidecar/react
+        working-directory: tauri-dotnet-sidecar
 
       - name: Install dependencies
         run: pnpm install
