@@ -1,54 +1,86 @@
-name: Build Tauri App
+name: 'publish'
 
 on:
-  push:
-    branches: [ main ]
   workflow_dispatch:
+  push:
+    branches:
+      - release
 
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    timeout-minutes: 60
+  publish-tauri:
+    permissions:
+      contents: write
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - platform: 'macos-latest'
+            args: '--target aarch64-apple-darwin'
+          - platform: 'macos-latest'
+            args: '--target x86_64-apple-darwin'
+          - platform: 'ubuntu-22.04'
+            args: ''
+          - platform: 'ubuntu-22.04-arm'
+            args: ''
+          - platform: 'windows-latest'
+            args: ''
+
+    runs-on: ${{ matrix.platform }}
+    timeout-minutes: 90
 
     steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-        with:
-          fetch-depth: 1
+      - uses: actions/checkout@v4
 
-      - name: Setup Node.js
+      - name: install dependencies (ubuntu only)
+        if: matrix.platform == 'ubuntu-22.04'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libwebkit2gtk-4.1-dev libappindicator3-dev librsvg2-dev patchelf
+
+      - name: setup node
         uses: actions/setup-node@v4
         with:
-          node-version: 20
-          check-latest: true
-          
-      - name: Setup pnpm
-        run: npm install -g pnpm
-        working-directory: tauri-dotnet-sidecar
+          node-version: lts/*
+          cache: 'pnpm'
 
-      - name: Build React frontend
-        run: pnpm install && pnpm run build
-        working-directory: tauri-dotnet-sidecar
+      - name: install Rust stable
+        uses: dtolnay/rust-toolchain@stable
+        with:
+          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
-      - name: Install dependencies
+      - name: Rust cache
+        uses: swatinem/rust-cache@v2
+        with:
+          workspaces: './src-tauri -> target'
+
+      - name: Install frontend dependencies
         run: pnpm install
         working-directory: tauri-dotnet-sidecar
 
-      - name: Setup Rust
-        uses: hecrj/setup-rust-action@v2
+      - name: Download .NET sidecar
+        run: |
+          mkdir -p tauri-dotnet-sidecar/src-tauri/bin
+          curl -L -o tauri-dotnet-sidecar/src-tauri/bin/server.exe \
+            https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
+
+      - name: Prepare platform-specific sidecar
+        run: |
+          cd tauri-dotnet-sidecar/src-tauri/bin
+          if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
+            cp server.exe server-x86_64-pc-windows-msvc.exe
+          elif [[ "${{ matrix.platform }}" == *"ubuntu"* ]]; then
+            cp server.exe server-x86_64-unknown-linux-gnu
+          else
+            cp server.exe server-x86_64-apple-darwin
+          fi
+
+      - uses: tauri-apps/tauri-action@v0
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
-          rust-version: stable
-
-      - name: Download sidecar
-        run: |
-          mkdir -p src-tauri/bin
-          curl -L -o src-tauri/bin/server.exe https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
-
-      - name: Prepare sidecar for Linux
-        run: |
-          cd src-tauri/bin
-          cp server.exe server-x86_64-unknown-linux-gnu
-
-      - name: Build Tauri App
-        run: pnpm run tauri build
-        working-directory: tauri-dotnet-sidecar/src-tauri
+          tagName: app-v__VERSION__
+          releaseName: 'App v__VERSION__'
+          releaseBody: 'See the assets to download this version and install.'
+          releaseDraft: true
+          prerelease: false
+          args: ${{ matrix.args }}
