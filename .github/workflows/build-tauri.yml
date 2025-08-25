@@ -37,9 +37,11 @@ jobs:
         working-directory: tauri-dotnet-sidecar
 
       - name: Download .NET sidecar
+        env:
+          GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
         run: |
           New-Item -ItemType Directory -Force -Path tauri-dotnet-sidecar/src-tauri/bin
-          Invoke-WebRequest -Uri "https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe" -OutFile "tauri-dotnet-sidecar/src-tauri/bin/server.exe"
+          gh release download --repo KaustubhIngale1704/dotnet-sidecar --pattern "server.exe" --dir "tauri-dotnet-sidecar/src-tauri/bin"
 
       - name: Prepare Windows sidecar
         run: |
@@ -47,7 +49,7 @@ jobs:
 
       - uses: tauri-apps/tauri-action@v0
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
         with:
           tagName: app-v__VERSION__
           releaseName: 'App v__VERSION__'
