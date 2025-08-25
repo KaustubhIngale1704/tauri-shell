@@ -54,6 +54,9 @@ jobs:
         run: |
           Copy-Item "src-tauri/bin/server.exe" "src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
 
+      - name: List downloaded files 1
+        run: ls src-tauri/bin
+
       - uses: tauri-apps/tauri-action@v0
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
