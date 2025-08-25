@@ -26,9 +26,13 @@ jobs:
         # working-directory: frontend
 
       - name: Setup Rust
-        uses: actions/setup-rust@v2
+        uses: rust-lang/setup-rust@v1
         with:
           rust-version: stable
+          
+      - name: Install Tauri CLI
+        shell: pwsh
+        run: cargo install tauri-cli --force
 
       # Download sidecar artifact from dotnet-sidecars repo
       - name: Download server sidecar
