@@ -1,4 +1,4 @@
-name: 'publish'
+name: 'publish-windows'
 
 on:
   workflow_dispatch:
@@ -8,34 +8,24 @@ on:
 
 jobs:
   publish-tauri:
+    runs-on: windows-latest
     permissions:
       contents: write
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          - platform: 'windows-latest'
-            args: ''
-
-    runs-on: ${{ matrix.platform }}
-    timeout-minutes: 90
+    timeout-minutes: 60
 
     steps:
       - uses: actions/checkout@v4
 
-      - name: Install pnpm
-        run: npm install -g pnpm
-        
-      - name: setup node
+      - name: Setup Node.js
         uses: actions/setup-node@v4
         with:
           node-version: lts/*
-          cache: 'pnpm'
 
-      - name: install Rust stable
+      - name: Install pnpm
+        run: npm install -g pnpm
+
+      - name: Install Rust stable
         uses: dtolnay/rust-toolchain@stable
-        with:
-          targets: ${{ matrix.platform == 'macos-latest' && 'aarch64-apple-darwin,x86_64-apple-darwin' || '' }}
 
       - name: Rust cache
         uses: swatinem/rust-cache@v2
@@ -52,16 +42,10 @@ jobs:
           curl -L -o tauri-dotnet-sidecar/src-tauri/bin/server.exe \
             https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
 
-      - name: Prepare platform-specific sidecar
+      - name: Prepare Windows sidecar
         run: |
           cd tauri-dotnet-sidecar/src-tauri/bin
-          if [[ "${{ matrix.platform }}" == *"windows"* ]]; then
-            cp server.exe server-x86_64-pc-windows-msvc.exe
-          elif [[ "${{ matrix.platform }}" == *"ubuntu"* ]]; then
-            cp server.exe server-x86_64-unknown-linux-gnu
-          else
-            cp server.exe server-x86_64-apple-darwin
-          fi
+          cp server.exe server-x86_64-pc-windows-msvc.exe
 
       - uses: tauri-apps/tauri-action@v0
         env:
@@ -72,4 +56,4 @@ jobs:
           releaseBody: 'See the assets to download this version and install.'
           releaseDraft: true
           prerelease: false
-          args: ${{ matrix.args }}
+          args: ''
