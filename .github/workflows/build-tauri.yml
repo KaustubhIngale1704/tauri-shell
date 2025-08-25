@@ -26,9 +26,9 @@ jobs:
         # working-directory: frontend
 
       - name: Setup Rust
-        uses: dtolnay/rust-toolchain@stable
+        uses: actions/setup-rust@v2
         with:
-          toolchain: stable
+          rust-version: stable
 
       # Download sidecar artifact from dotnet-sidecars repo
       - name: Download server sidecar
