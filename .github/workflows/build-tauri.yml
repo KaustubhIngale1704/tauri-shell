@@ -26,9 +26,6 @@ jobs:
         uses: hecrj/setup-rust-action@v2
         with:
           rust-version: stable
-          
-      - name: Install Tauri CLI
-        run: cargo install tauri-cli --force
 
       - name: Download sidecar
         run: |
@@ -41,5 +38,5 @@ jobs:
           cp server.exe server-x86_64-unknown-linux-gnu
 
       - name: Build Tauri App
-        run: npm run tauri build
-        working-directory: tauri-dotnet-sidecar
+        run: pnpm run tauri build
+        working-directory: tauri-dotnet-sidecar/src-tauri
