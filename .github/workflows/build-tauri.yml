@@ -42,4 +42,4 @@ jobs:
 
       - name: Build Tauri App
         run: npm run tauri build
-        working-directory: src-tauri
+        working-directory: tauri-dotnet-sidecar
