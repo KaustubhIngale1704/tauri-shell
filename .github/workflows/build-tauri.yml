@@ -45,19 +45,19 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
         run: |
           mkdir -p src-tauri/bin
-          curl -L -o src-tauri/bin/server.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/server.exe
+          curl -L -o tauri-dotnet-sidecar/src-tauri/bin/server.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/server.exe
 
       - name: List downloaded files
         run: ls src-tauri/bin
 
       - name: Prepare Windows sidecar
         run: |
-          Copy-Item "src-tauri/bin/server.exe" "src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
+          Copy-Item "tauri-dotnet-sidecar/src-tauri/bin/server.exe" "tauri-dotnet-sidecar/src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
 
       - name: Delete original server.exe
         shell: pwsh
         run: |
-          $original = "src-tauri/bin/server.exe"
+          $original = "tauri-dotnet-sidecar/src-tauri/bin/server.exe"
           if (Test-Path $original) {
             Remove-Item $original -Force
             Write-Host "Deleted original file: $original"
@@ -71,7 +71,7 @@ jobs:
       - name: Build Tauri app
         shell: bash
         run: pnpm tauri build
-        working-directory: src-tauri
+        working-directory: tauri-dotnet-sidecar
 
       # Zip all files/folders in /bundle/nsis and put in /artifacts/windows-latest/
       - name: Zip assets (Windows)
