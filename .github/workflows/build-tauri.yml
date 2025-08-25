@@ -38,14 +38,12 @@ jobs:
 
       - name: Download .NET sidecar
         run: |
-          mkdir -p tauri-dotnet-sidecar/src-tauri/bin
-          curl -L -o tauri-dotnet-sidecar/src-tauri/bin/server.exe \
-            https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
+          New-Item -ItemType Directory -Force -Path tauri-dotnet-sidecar/src-tauri/bin
+          Invoke-WebRequest -Uri "https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe" -OutFile "tauri-dotnet-sidecar/src-tauri/bin/server.exe"
 
       - name: Prepare Windows sidecar
         run: |
-          cd tauri-dotnet-sidecar/src-tauri/bin
-          cp server.exe server-x86_64-pc-windows-msvc.exe
+          Copy-Item "tauri-dotnet-sidecar/src-tauri/bin/server.exe" "tauri-dotnet-sidecar/src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
 
       - uses: tauri-apps/tauri-action@v0
         env:
