@@ -37,9 +37,9 @@ jobs:
         working-directory: tauri-dotnet-sidecar
 
       - name: Build frontend
-        run: |
-          pnpm build
-
+        run: pnpm build
+        working-directory: tauri-dotnet-sidecar
+        
       - name: Download .NET sidecar
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
