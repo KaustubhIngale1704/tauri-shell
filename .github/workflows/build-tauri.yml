@@ -68,13 +68,14 @@ jobs:
       - name: List downloaded files 1
         run: ls src-tauri/bin
 
-      - uses: tauri-apps/tauri-action@v0
-        env:
-          GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
-        with:
-          tagName: app-v__VERSION__
-          releaseName: 'App v__VERSION__'
-          releaseBody: 'See the assets to download this version and install.'
-          releaseDraft: true
-          prerelease: false
-          args: ''
+      - name: Build Tauri app
+        shell: bash
+        run: pnpm tauri build
+
+      # Zip all files/folders in /bundle/nsis and put in /artifacts/windows-latest/
+      - name: Zip assets (Windows)
+        shell: pwsh
+        if: startsWith(runner.os, 'Windows')
+        run: |
+          mkdir -p ./artifacts/windows-latest
+          Compress-Archive -Path src-tauri/target/release/bundle/nsis/* -DestinationPath ./artifacts/windows-latest/windows-latest-artifacts.zip
