@@ -71,7 +71,7 @@ jobs:
       - name: Build Tauri app
         shell: bash
         run: pnpm tauri build
-        working-directory: tauri-dotnet-sidecar
+        working-directory: src-tauri
 
       # Zip all files/folders in /bundle/nsis and put in /artifacts/windows-latest/
       - name: Zip assets (Windows)
