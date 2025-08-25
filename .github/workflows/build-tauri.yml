@@ -21,6 +21,10 @@ jobs:
         with:
           node-version: 20
           check-latest: true
+          
+      - name: Setup pnpm
+        run: npm install -g pnpm
+        working-directory: tauri-dotnet-sidecar
 
       - name: Setup Rust
         uses: hecrj/setup-rust-action@v2
