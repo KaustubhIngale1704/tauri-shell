@@ -21,18 +21,10 @@ jobs:
         with:
           node-version: 20
 
-      # - name: Install frontend deps
-        # run: npm install
-        # working-directory: frontend
-
       - name: Setup Rust
-        uses: rust-lang/setup-rust@v1
+        uses: actions-rust-lang/setup-rust-toolchain@v1
         with:
-          rust-version: stable
-          
-      - name: Install Tauri CLI
-        shell: pwsh
-        run: cargo install tauri-cli --force
+          toolchain: stable
 
       # Download sidecar artifact from dotnet-sidecars repo
       - name: Download server sidecar
