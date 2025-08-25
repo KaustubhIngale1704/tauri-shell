@@ -13,17 +13,27 @@ jobs:
     runs-on: ${{ matrix.platform }}
 
     steps:
-      # 1️⃣ Checkout code
       - name: Checkout
         uses: actions/checkout@v4
 
-      # 3️⃣ Setup Rust
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+          check-latest: true
+
       - name: Setup Rust
         uses: hecrj/setup-rust-action@v2
         with:
           rust-version: stable
 
-      # 4️⃣ Download sidecar from .NET sidecars release
+      - name: Install dependencies
+        run: npm install
+        working-directory: src-tauri
+
+      - name: Install Tauri CLI
+        run: cargo install tauri-cli --force
+
       - name: Download sidecar
         run: |
           mkdir -p src-tauri/bin
@@ -33,7 +43,6 @@ jobs:
             curl -L -o src-tauri/bin/server.exe https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
           fi
 
-      # 5️⃣ Rename/copy to platform-specific filenames
       - name: Prepare sidecars for Tauri
         run: |
           cd src-tauri/bin
@@ -45,7 +54,6 @@ jobs:
             cp server.exe server-x86_64-apple-darwin
           fi
 
-      # 6️⃣ Build Tauri app
       - name: Build Tauri App
         run: npm run tauri build
         working-directory: src-tauri
