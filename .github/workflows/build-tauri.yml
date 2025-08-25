@@ -79,4 +79,4 @@ jobs:
         if: startsWith(runner.os, 'Windows')
         run: |
           mkdir -p ./artifacts/windows-latest
-          Compress-Archive -Path src-tauri/target/release/bundle/nsis/* -DestinationPath ./artifacts/windows-latest/windows-latest-artifacts.zip
+          Compress-Archive -Path tauri-dotnet-sidecar/src-tauri/target/release/bundle/nsis/* -DestinationPath ./artifacts/windows-latest/windows-latest-artifacts.zip
