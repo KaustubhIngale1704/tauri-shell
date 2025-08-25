@@ -21,9 +21,9 @@ jobs:
         with:
           node-version: 20
 
-      - name: Install frontend deps
-        run: npm install
-        working-directory: frontend
+      # - name: Install frontend deps
+        # run: npm install
+        # working-directory: frontend
 
       - name: Setup Rust
         uses: dtolnay/rust-toolchain@stable
