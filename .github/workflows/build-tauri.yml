@@ -40,7 +40,7 @@ jobs:
         env:
           GITHUB_TOKEN: ${{ secrets.GH_PAT_TAURI }}
         run: |
-          curl -L -o src-tauri/bin/sidecar.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/sidecar.exe
+          curl -L -o src-tauri/bin/sidecar.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/server.exe
 
 
       - name: Prepare Windows sidecar
