@@ -11,13 +11,13 @@ jobs:
       matrix:
         platform: [windows-latest, ubuntu-latest, macos-latest]
     runs-on: ${{ matrix.platform }}
+    timeout-minutes: 60
 
     steps:
       - name: Checkout
         uses: actions/checkout@v4
         with:
           fetch-depth: 1
-          retry-on-failure: true
 
       - name: Setup Node.js
         uses: actions/setup-node@v4
@@ -30,8 +30,8 @@ jobs:
         with:
           rust-version: stable
 
-      - name: Install dependencies
-        run: npm install
+      - name: Install npm dependencies
+        run: npm ci
         working-directory: src-tauri
 
       - name: Install Tauri CLI
@@ -46,7 +46,7 @@ jobs:
             curl -L -o src-tauri/bin/server.exe https://github.com/KaustubhIngale1704/dotnet-sidecar/releases/latest/download/server.exe
           fi
 
-      - name: Prepare sidecars for Tauri
+      - name: Prepare platform-specific sidecars
         run: |
           cd src-tauri/bin
           if [ "${{ runner.os }}" == "Windows" ]; then
@@ -56,6 +56,10 @@ jobs:
           else
             cp server.exe server-x86_64-apple-darwin
           fi
+
+      - name: Build React frontend
+        run: npm run build
+        working-directory: src-tauri
 
       - name: Build Tauri App
         run: npm run tauri build
