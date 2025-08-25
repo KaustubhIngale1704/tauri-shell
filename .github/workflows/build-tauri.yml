@@ -43,6 +43,8 @@ jobs:
           mkdir -p src-tauri/bin
           curl -L -o src-tauri/bin/server.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/server.exe
 
+      - name: List downloaded files
+        run: ls -la src-tauri/bin
 
       - name: Prepare Windows sidecar
         run: |
