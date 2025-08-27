@@ -47,26 +47,9 @@ jobs:
           mkdir -p tauri-dotnet-sidecar/src-tauri/bin
           curl -L -o tauri-dotnet-sidecar/src-tauri/bin/server.exe https://github.com/your-org/dotnet-sidecar/releases/download/v1.0.0/server.exe
 
-      - name: List downloaded files
-        run: ls tauri-dotnet-sidecar/src-tauri/bin
-
       - name: Prepare Windows sidecar
         run: |
           Copy-Item "tauri-dotnet-sidecar/src-tauri/bin/server.exe" "tauri-dotnet-sidecar/src-tauri/bin/server-x86_64-pc-windows-msvc.exe"
-
-      - name: Delete original server.exe
-        shell: pwsh
-        run: |
-          $original = "tauri-dotnet-sidecar/src-tauri/bin/server.exe"
-          if (Test-Path $original) {
-            Remove-Item $original -Force
-            Write-Host "Deleted original file: $original"
-          } else {
-            Write-Host "File not found, nothing to delete: $original"
-          }
-
-      - name: List downloaded files 1
-        run: ls tauri-dotnet-sidecar/src-tauri/bin
 
       - name: Build Tauri app
         shell: bash
